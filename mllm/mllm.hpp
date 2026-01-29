@@ -260,7 +260,7 @@ namespace mllm {
 //===----------------------------------------------------------------------===//
 
 // Android-specific stack trace implementation
-#if defined(__MLLM_SIGNAL_ANDROID)
+#if defined(__MLLM_SIGNAL_ANDROID) && !defined(MLLM_DISABLE_ANDROID_STACKTRACE)
 struct AndroidBacktraceState {
   void** current;
   void** end;
@@ -278,7 +278,6 @@ static _Unwind_Reason_Code android_unwind_callback(struct _Unwind_Context* conte
   }
   return _URC_NO_REASON;
 }
-
 static size_t capture_backtrace(void** buffer, size_t max) {
   AndroidBacktraceState state = {.current = buffer, .end = buffer + max};
   _Unwind_Backtrace(android_unwind_callback, &state);
@@ -320,7 +319,11 @@ inline void print_stack_trace() {
   safe_write("Stack trace not available on Windows in signal handler\n", 52);
 #elif defined(__MLLM_SIGNAL_ANDROID)
   void* buffer[100];
+#if !defined(MLLM_DISABLE_ANDROID_STACKTRACE)
   const int size = capture_backtrace(buffer, 100);
+#else
+  const int size = 0;
+#endif
   safe_write("Stack trace:\n", 13);
 
   for (int i = 0; i < size; ++i) {
@@ -356,11 +359,15 @@ inline void __signal_handler(int signal) {
   safe_write("\n", 1);
   switch (signal) {
     case SIGSEGV:
+#if !defined(MLLM_DISABLE_ANDROID_STACKTRACE)
       print_stack_trace();
+#endif
       safe_write("Possible causes: invalid memory access, dangling pointer, stack overflow.\n", 74);
       break;
     case SIGABRT:
+#if !defined(MLLM_DISABLE_ANDROID_STACKTRACE)
       print_stack_trace();
+#endif
       safe_write("Possible causes: failed assertion, memory corruption, double-free.\n", 68);
       break;
     default: break;
@@ -375,6 +382,9 @@ inline void __signal_handler(int signal) {
 }
 
 inline void __setup_signal_handler() {
+#if defined(__MLLM_SIGNAL_ANDROID) && defined(MLLM_DISABLE_ANDROID_STACKTRACE)
+  return;
+#endif
 #if defined(__MLLM_SIGNAL_WINDOWS)
   signal(SIGINT, __signal_handler);
   signal(SIGTERM, __signal_handler);
@@ -393,6 +403,7 @@ inline void __setup_signal_handler() {
   sigaction(SIGFPE, &sa, nullptr);
 #endif
 }
+
 
 template<typename Func>
 inline int __mllm_exception_main(Func&& func) {

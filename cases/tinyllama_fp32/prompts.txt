@@ -1,0 +1,3 @@
+hello
+Tell me a one-sentence joke.
+Write a short haiku about winter.

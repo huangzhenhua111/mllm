@@ -1,6 +1,12 @@
 file(GLOB_RECURSE MLLM_CPU_BACKEND_OPS_SRC ${CMAKE_CURRENT_LIST_DIR}/ops/*.cpp)
 file(GLOB_RECURSE MLLM_CPU_BACKEND_KERNELS_COMMON_SRC ${CMAKE_CURRENT_LIST_DIR}/kernels/common/*.cpp)
 
+# Host(x86) build: exclude ops that rely on x86 intrinsics paths not wired correctly yet
+if(NOT MLLM_BUILD_ARM_BACKEND)
+  list(FILTER MLLM_CPU_BACKEND_OPS_SRC EXCLUDE REGEX ".*/PagedAttnOp\\.cpp$")
+endif()
+
+
 if(MLLM_BUILD_ARM_BACKEND)
   file(GLOB_RECURSE MLLM_CPU_BACKEND_KERNELS_SRC ${CMAKE_CURRENT_LIST_DIR}/kernels/arm/*.cpp)
 

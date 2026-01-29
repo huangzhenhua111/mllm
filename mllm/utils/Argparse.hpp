@@ -196,6 +196,18 @@ class Argparse {
       }
     }
 
+// Early exit on help: skip required checks
+for (auto& param : inst.args_) {
+  const auto& flags = param->flags();
+  const bool is_help =
+      std::find(flags.begin(), flags.end(), "-h") != flags.end() ||
+      std::find(flags.begin(), flags.end(), "--help") != flags.end();
+  if (is_help && param->isSet()) {
+    printHelp();
+    return;
+  }
+}
+
     // Check requirements
     for (auto& param : inst.args_) {
       if (param->isRequired() && !param->isSet()) {

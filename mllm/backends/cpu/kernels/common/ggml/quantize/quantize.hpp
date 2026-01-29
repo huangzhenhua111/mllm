@@ -105,7 +105,47 @@ inline static float lookup_fp16_to_fp32(uint16_t f) {
 
 #else
 namespace mllm::cpu {
-#define MLLM_COMPUTE_FP16_TO_FP32(x) _cvtsh_ss(x)
+// fp16 bits -> fp32 fallback (no F16C)
+static inline float mllm_fp16_bits_to_fp32(uint16_t h) {
+  uint32_t sign = (uint32_t)(h & 0x8000) << 16;
+  uint32_t exp  = (h >> 10) & 0x1F;
+  uint32_t mant = h & 0x03FF;
+
+  uint32_t f;
+  if (exp == 0) {
+    if (mant == 0) {
+      f = sign;  // zero
+    } else {
+      // subnormal
+      exp = 1;
+      while ((mant & 0x0400) == 0) { mant <<= 1; exp--; }
+      mant &= 0x03FF;
+      uint32_t exp32 = (exp + (127 - 15)) << 23;
+      uint32_t mant32 = mant << 13;
+      f = sign | exp32 | mant32;
+    }
+  } else if (exp == 31) {
+    // inf / nan
+    uint32_t exp32 = 0xFFu << 23;
+    uint32_t mant32 = mant << 13;
+    f = sign | exp32 | mant32;
+  } else {
+    uint32_t exp32 = (exp + (127 - 15)) << 23;
+    uint32_t mant32 = mant << 13;
+    f = sign | exp32 | mant32;
+  }
+
+  float out;
+  __builtin_memcpy(&out, &f, sizeof(out));
+  return out;
+}
+
+#if defined(__F16C__) && (defined(__x86_64__) || defined(_M_X64))
+  #define MLLM_COMPUTE_FP16_TO_FP32(x) _cvtsh_ss((uint16_t)(x))
+#else
+  #define MLLM_COMPUTE_FP16_TO_FP32(x) mllm_fp16_bits_to_fp32((uint16_t)(x))
+#endif
+
 #define MLLM_COMPUTE_FP32_TO_FP16(x) _cvtss_sh(x, 0)
 
 static float table_f32_f16[1 << 16];

@@ -1,0 +1,9 @@
+run_id,real_s,user_s,sys_s,mem_cap_mb,mem_used_mb,response_head
+tinyllama_fp32_20260128_191820_5461,66.53,0.0,0.01,896.0,704.0,I'm glad to hear that you enjoyed my
+tinyllama_fp32_20260128_202513_23515,47.23,0.01,0.0,896.0,704.0,I'm glad to hear that you enjoyed my
+tinyllama_fp32_20260128_202600_18024,42.93,0.0,0.01,896.0,704.0,I'm glad to hear that you enjoyed my
+tinyllama_fp32_20260128_202643_1914,34.31,0.01,0.0,896.0,704.0,"""What do you call a pirate with a"
+tinyllama_fp32_20260128_202718_10725,19.03,0.0,0.01,896.0,704.0,"""What do you call a pirate with a"
+tinyllama_fp32_20260128_202737_11645,7.01,0.0,0.01,896.0,704.0,"Winter's cold,"
+tinyllama_fp32_20260128_202744_26783,5.64,0.0,0.01,896.0,704.0,"Winter's cold,"
+tinyllama_fp32_warmup_20260128_202414_3416,58.57,0.0,0.01,896.0,704.0,I'm glad to hear that you enjoyed my

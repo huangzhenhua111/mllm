@@ -1,0 +1,23 @@
+
+****************** LLaMA Interactive CLI *******************
+Enter 'exit' or 'quit' to end the session
+
+💬 Prompt text (or 'exit/quit'): 🔄 Processing...
+
+🤖 Response: I'm glad to hear that you enjoyed my
+------------------------------------------------------------
+
+ 
++------------------------------------------------------+
+| MLLM Memory Report                                   |
++------------------------------------------------------+
+| Device: CPU                                          |
++------------------------------------------------------+
+| Object Memory Hit Times: 0                           |
+| Object Memory Cached Times: 0                        |
++------------------------------------------------------+
+| address: 0xb40000762ec02000, cap:  512MB, used:  320MB      |
+| address: 0xb40000764ee02000, cap:  256MB, used:  256MB      |
+| address: 0xb400007661602000, cap:  128MB, used:  128MB      |
++------------------------------------------------------+
+

@@ -40,7 +40,11 @@
 #include "mllm/backends/cpu/ops/LinearOp.hpp"
 #include "mllm/backends/cpu/ops/MatMulOp.hpp"
 #include "mllm/backends/cpu/ops/MultimodalRoPEOp.hpp"
+
+#if defined(__aarch64__) || defined(__arm__) || defined(__ANDROID__)
 #include "mllm/backends/cpu/ops/PagedAttnOp.hpp"
+#endif
+
 #include "mllm/backends/cpu/ops/ParamOp.hpp"
 #include "mllm/backends/cpu/ops/PermuteOp.hpp"
 #include "mllm/backends/cpu/ops/QuickGELUOp.hpp"
@@ -79,7 +83,11 @@ CPUBackend::CPUBackend() : Backend(kCPU, createCPUAllocator()) {
                CPUReLUOpFactory, CPUMatMulOpFactory, CPUFlashAttention2OpFactory, CPUSliceOpFactory, CPUVisionRoPEOpFactory,
                CPUParamOpFactory, CPUMultimodalRoPEOpFactory, CPURoPEOpFactory, CPUCausalMaskOpFactory, CPUConv1DOpFactory,
                CPUConv3DOpFactory, CPUSTFTOpFactory, CPUISTFTOpFactory, CPUIndexOpFactory, CPUTopKOpFactory, CPUClipOpFactory,
-               CPUMeanOpFactory, CPUKVCacheOpFactory, CPUPagedAttnOpFactory, CPUScatter2ShardsOpFactory, CPURadixAttnOpFactory,
+               CPUMeanOpFactory, CPUKVCacheOpFactory, 
+               #if defined(__aarch64__) || defined(__arm__) || defined(__ANDROID__)
+               CPUPagedAttnOpFactory,
+               #endif 
+               CPUScatter2ShardsOpFactory, CPURadixAttnOpFactory,
                CPUConv2DOpFactory, CPULayerNorm2DOpFactory, CPUInterpolateOpFactory, CPUPadOpFactory, CPUMaskedScatterOpFactory,
                CPUArgsortOpFactory, CPUCloneOpFactory, CPUAvgPool1dOpFactory, CPUFlashAttention2SwaSinkOpFactory,
                CPURadixAttnRelaxOpFactory, CPURadixAttnSwaSinkOpFactory, CPUEqualOpFactory, CPUWhereOpFactory,
